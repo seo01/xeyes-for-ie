@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+	<head>
+		<!--[if IE]><script type="text/javascript">window['isIE'] = true;</script><![endif]-->
+		<style type="text/css">
+		.eye-outer {
+			width: 100px; 
+			height: 200px; 
+			background: black; 
+			-moz-border-radius: 50px / 100px; 
+			-webkit-border-radius: 50px / 100px; 
+			border-radius: 50px / 100px;
+			position:absolute;
+		}
+		.eye-inner {
+			width: 80px; 
+			height: 160px; 
+			background: white; 
+			-moz-border-radius: 40px / 80px; 
+			-webkit-border-radius: 40px / 80px; 
+			border-radius: 40px / 80px;
+			position:absolute;
+			top: 20px;
+			left:10px;
+		}
+		.eye-lid {
+			width: 100px;
+			height: 150px;
+			background: white;
+			border-bottom-width: 10px;
+			border-bottom-color: black;
+			border-bottom-style: solid;
+			position:absolute;
+			z-index: 1;
+			visibility: hidden;
+		}
+		.pupil { 
+			width: 20px;
+			height: 20px;
+			background: black; 
+			-moz-border-radius: 10px; 
+			-webkit-border-radius: 10px; 
+			border-radius: 10px;
+			position:absolute;
+			top:30px;
+			left:10px;
+		}
+		.right-outer{
+			left:120px;
+		}
+		.left-outer{
+
+		}
+		.warning{
+			background: white;
+			top: 180px;
+			left: 30px;
+			position: absolute;
+			z-index: 1;
+			font-family: arial,sans-serif;
+			font-weight: bold;
+			border-width: 1px;
+			border-color: black;
+			border-style: solid;
+			padding: 5px;
+		}
+		</style>
+		
+		<script type="text/javascript">
+		function movePupil(dx, dy, pupil)
+		{
+			R = Math.sqrt(dx*dx+dy*dy);
+			x = (R < 20)? dx : dx*20/R;
+			y = (R < 50)? dy : dy*50/R;
+			pupil.style.left = x +30 + "px";
+			pupil.style.top = y + 60 + "px";
+		}
+
+		function winkEye(eyeLid)
+		{
+			eyeLid.style.visibility = "visible";
+		}
+		
+		function unwinkEye(eyeLid)
+		{
+			eyeLid.style.visibility = "hidden";
+		}
+		
+		function winking(eyeLid,event,winkOnLeftKey,winkOnRightKey)
+		{
+			if((winkOnLeftKey && ifLeftKeyPress(event)) || (winkOnRightKey && ifRightKeyPress(event)))
+				winkEye(eyeLid);
+			else
+				unwinkEye(eyeLid);
+		}
+		
+		function ifLeftKeyPress(e)
+		{
+			return (e.altLeft || e.ctrLeft || e.shiftLeft);
+		}
+		
+		function ifRightKeyPress(e)
+		{
+			return ((!e.altLeft && e.altKey) || (!e.ctrLeft && e.ctrlKey) || (!e.shiftLeft && e.shiftKey));
+		}
+
+		function attachEvents(eye,pupil,eyeLid,winkOnLeftKey,winkOnRightKey)
+		{
+			eye.attachEvent("onmousemove", function (e) {
+				movePupil(e.offsetX-40,e.offsetY-80,pupil);
+				winking(eyeLid,event,winkOnLeftKey,winkOnRightKey);
+			});
+			setInterval(function () {
+				eye.fireEvent("onmousemove");
+			}, 100);
+		}
+		
+		function setup()
+		{
+			resizeTo(250,300);
+		}
+
+		
+		window.attachEvent("onload", function() {
+			setup();
+			var leftEye = document.getElementById("lefteye");
+			var leftPupil = document.getElementById("leftpupil");
+			var leftLid = document.getElementById("leftlid");
+			attachEvents(leftEye,leftPupil,leftLid,true,false);
+			var rightEye = document.getElementById("righteye");
+			var rightPupil = document.getElementById("rightpupil");
+			var rightLid = document.getElementById("rightlid"); 
+			attachEvents(rightEye,rightPupil,rightLid,false,true);
+		});
+
+		</script>
+		<title>xeyes</title>
+	</head>
+	<body id="body">
+		<div class="eye-outer left-outer">
+			<div class="eye-lid" id="leftlid"></div>
+			<div class="eye-inner" id="lefteye">
+				<div class="pupil" id="leftpupil"></div>
+			</div>
+		</div>
+		<div class="eye-outer right-outer">
+			<div class="eye-lid" id="rightlid"></div>
+			<div class="eye-inner" id="righteye">
+				<div class="pupil" id="rightpupil"></div>
+			</div>
+		</div>
+		<script type="text/javascript">
+		if(!window.isIE)
+			document.write('<div class="warning">xeyes requires<br/>Internet Explorer 9+</div>');
+		</script>
+	</body>
+</html>
